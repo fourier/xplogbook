@@ -106,5 +106,9 @@
 ;; (setf entries (parse-xplog (merge-pathnames *xplane-logbook-path* *xplane-logbook-name*)))
 ;; (print-stats entries)    
 
+(defun main()
+  (print-stats (parse-xplog (merge-pathnames *xplane-logbook-path* *xplane-logbook-name*)))
+  (quit))
+
 
 
