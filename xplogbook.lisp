@@ -1,5 +1,6 @@
 (ql:quickload "split-sequence")
 (ql:quickload "simple-date-time")
+(ql:quickload "parse-float")
 
 (use-package :simple-date-time)
 
@@ -61,23 +62,49 @@
                    :departure (nth 2 parsed)
                    :arrival (nth 3 parsed)
                    :landings (parse-integer (nth 4 parsed))
-                   :flight-time (parse-float (nth 5 parsed))
-                   :night-time (parse-float (nth 6 parsed))
-                   :instrument-time (parse-float (nth 7 parsed))
-                   :cross-country-time (parse-float (nth 8 parsed)))))
-
-
-   
-   
+                   :flight-time (parse-float:parse-float (nth 5 parsed))
+                   :night-time (parse-float:parse-float (nth 6 parsed))
+                   :instrument-time (parse-float:parse-float (nth 7 parsed))
+                   :cross-country-time (parse-float:parse-float (nth 8 parsed)))))
 
 
 (defun parse-xplog (filename)
   (let ((entries (butlast (cddr (read-lines (pathname filename))))))
     (mapcar 'create-xplog-entry-from-line entries)))
 
-;(with-open-file (file (merge-pathnames *xplane-logbook-path* *xplane-logbook-name*))
-;  (read-lines file))
-    
+
+(defun print-stats (entries)
+  (labels ((get-stats (entries-list)
+           (let ((ttime (reduce #'(lambda (x y) (+ x (flight-time y))) entries-list :initial-value 0))
+                 (ntime (reduce #'(lambda (x y) (+ x (night-time y))) entries-list :initial-value 0))
+                 (lnds (reduce #'(lambda (x y) (+ x (landings y))) entries-list :initial-value 0)))
+             (values ttime ntime lnds)))
+           (print-local-stats (entries-list)
+             (multiple-value-bind (ttime ntime lnds)
+                 (get-stats entries-list)
+               (format *standard-output* "Flight time: ~1$ hours~%" ttime)
+               (format *standard-output* "Night flight time: ~1$ hours~%" ntime)
+               (format *standard-output* "Number of landings: ~a~%" lnds))))
+    (format *standard-output* "Total statistics ~%=======================~%")
+    (print-local-stats entries)
+    (let ((per-aircraft (make-hash-table :test 'equal)))
+      (format *standard-output* "~%Airplanes used:~%")
+      (dolist (x entries)
+        (push x (gethash (aircraft x) per-aircraft)))
+      (maphash #'(lambda (k v)
+                   (declare (ignore v))
+                   (format *standard-output* "~a~%" k))
+               per-aircraft)
+      (format *standard-output* "~%Statistics per airplane~%=======================~%")
+      (maphash #'(lambda (k v)
+                   (format *standard-output* "~%~a" k)
+                   (format *standard-output* "~%-----------------------~%")
+                   (print-local-stats v))
+               per-aircraft))))
+      
+;; usage example:
+;; (setf entries (parse-xplog (merge-pathnames *xplane-logbook-path* *xplane-logbook-name*)))
+;; (print-stats entries)    
 
 
 
