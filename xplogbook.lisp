@@ -4,6 +4,14 @@
 
 (use-package :simple-date-time)
 
+(defun command-line ()
+  (or 
+   #+SBCL sb-ext:*posix-argv*  
+   #+LISPWORKS system:*line-arguments-list*
+   #+CMU extensions:*command-line-words*
+   nil))
+
+
 (defparameter *xplane-logbook-path* "/Users/alexeyv/Library/Application Support/Steam/SteamApps/common/X-Plane 10/Output/logbooks/")
 
 (defparameter *xplane-logbook-name* "X-Plane Pilot.txt")
@@ -75,10 +83,10 @@
 
 (defun print-stats (entries)
   (labels ((get-stats (entries-list)
-           (let ((ttime (reduce #'(lambda (x y) (+ x (flight-time y))) entries-list :initial-value 0))
-                 (ntime (reduce #'(lambda (x y) (+ x (night-time y))) entries-list :initial-value 0))
-                 (lnds (reduce #'(lambda (x y) (+ x (landings y))) entries-list :initial-value 0)))
-             (values ttime ntime lnds)))
+             (let ((ttime (reduce #'(lambda (x y) (+ x (flight-time y))) entries-list :initial-value 0))
+                   (ntime (reduce #'(lambda (x y) (+ x (night-time y))) entries-list :initial-value 0))
+                   (lnds (reduce #'(lambda (x y) (+ x (landings y))) entries-list :initial-value 0)))
+               (values ttime ntime lnds)))
            (print-local-stats (entries-list)
              (multiple-value-bind (ttime ntime lnds)
                  (get-stats entries-list)
@@ -101,14 +109,28 @@
                    (format *standard-output* "~%-----------------------~%")
                    (print-local-stats v))
                per-aircraft))))
-      
+
 ;; usage example:
 ;; (setf entries (parse-xplog (merge-pathnames *xplane-logbook-path* *xplane-logbook-name*)))
 ;; (print-stats entries)    
 
-(defun main()
-  (print-stats (parse-xplog (merge-pathnames *xplane-logbook-path* *xplane-logbook-name*)))
-  (quit))
+
+(defun usage (appname)
+  (format *standard-output* "X-Plane 10 logbook parser.~%")
+  (format *standard-output* (concatenate 'string  "Usage: " appname " path-to-logbook~%"))
+  (format *standard-output* "where path-to-logbook - path to the logbook file.~%For Steam OSX installation typically:~%\"/Users/UserName/Library/Application Support/Steam/SteamApps/common/X-Plane 10/Output/logbooks/X-Plane Pilot.txt\"~%")
+  #+SBCL (sb-ext:exit)
+  #+LISPWORKS (lispworks:quit)
+  )
+
+(defun main ()
+  (let ((cmdargs (command-line)))
+    (if (< (length cmdargs) 2)
+        (usage (car cmdargs))
+        (print-stats (parse-xplog (second cmdargs)))))
+  #+SBCL (sb-ext:exit)
+  #+LISPWORKS (lispworks:quit))
+
 
 
 
