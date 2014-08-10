@@ -14,7 +14,7 @@ where path-to-logbook - path to the logbook file.
 For Steam OSX installation typically:
 _"/Users/UserName/Library/Application Support/Steam/SteamApps/common/X-Plane 10/Output/logbooks/X-Plane Pilot.txt"_
 
-=Output example
+=== Output example
 ```
 Total statistics
 =======================
