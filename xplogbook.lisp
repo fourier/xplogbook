@@ -11,11 +11,6 @@
    #+CMU extensions:*command-line-words*
    nil))
 
-
-(defparameter *xplane-logbook-path* "/Users/alexeyv/Library/Application Support/Steam/SteamApps/common/X-Plane 10/Output/logbooks/")
-
-(defparameter *xplane-logbook-name* "X-Plane Pilot.txt")
-
 (defun read-lines (stream)
   ;; check if not nil
   (when stream
