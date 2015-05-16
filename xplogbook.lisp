@@ -1,8 +1,6 @@
-(ql:quickload "split-sequence")
-(ql:quickload "simple-date-time")
-(ql:quickload "parse-float")
+;;;; xplogbook.lisp
 
-(use-package :simple-date-time)
+(in-package #:xplogbook)
 
 (defun command-line ()
   (or 

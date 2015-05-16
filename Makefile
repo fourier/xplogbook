@@ -13,7 +13,7 @@ release: all
 .DEFAULT_GOAL := release
 
 SOURCES := $(wildcard *.lisp)
-BUILD_SRC = build.lisp
+BUILD_SRC = build_sbcl.lisp
 
 all: $(SOURCES)
 	$(SBCL) --load $(BUILD_SRC)
