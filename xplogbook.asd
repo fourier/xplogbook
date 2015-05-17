@@ -6,7 +6,8 @@
   :licence "GPL"
   :depends-on (#:split-sequence
                #:simple-date-time
-               #:parse-float)
+               #:parse-float
+               #:cl-annot)
   :serial t
   :components ((:file "package")
                (:file "xplogbook")))

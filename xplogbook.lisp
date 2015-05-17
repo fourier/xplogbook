@@ -1,6 +1,7 @@
 ;;;; xplogbook.lisp
 
 (in-package #:xplogbook)
+(annot:enable-annot-syntax)
 
 (defun command-line ()
   (or 
@@ -68,12 +69,12 @@
                    :instrument-time (parse-float:parse-float (nth 7 parsed))
                    :cross-country-time (parse-float:parse-float (nth 8 parsed)))))
 
-
+@export 
 (defun parse-xplog (filename)
   (let ((entries (butlast (cddr (read-lines (pathname filename))))))
     (mapcar 'create-xplog-entry-from-line entries)))
 
-
+@export
 (defun print-stats (entries)
   (labels ((get-stats (entries-list)
              (let ((ttime (reduce #'(lambda (x y) (+ x (flight-time y))) entries-list :initial-value 0))
@@ -116,6 +117,7 @@
   #+LISPWORKS (lispworks:quit)
   )
 
+@export
 (defun main ()
   (let ((cmdargs (command-line)))
     (if (< (length cmdargs) 2)
