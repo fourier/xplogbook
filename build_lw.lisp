@@ -7,12 +7,12 @@
     (load quicklisp-init)))
 
 ;; add Sources/ directory to quicklisp local directories
-(push #P"/Users/alexeyv/Sources/" ql:*local-project-directories*)
+(push #P"/Users/alexeyv/Sources/lisp" ql:*local-project-directories*)
 (ql:register-local-projects)
 
 (ql:quickload :xplogbook)
 (deliver 'xplogbook:main
-         "~/Sources/xplogbook/xplogbook_lw"
+         "~/Sources/lisp/xplogbook/xplogbook_lw"
          5
          :interface nil
          :multiprocessing nil)
